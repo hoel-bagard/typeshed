@@ -1,98 +1,49 @@
-from collections.abc import Iterable, Sequence
-from typing import Any, TypeVar
+# ruff: noqa: F401
+from collections.abc import Sequence
+from typing import TypeVar
 from typing_extensions import TypeAlias
 
-import numpy as np
-import numpy.typing as npt
-from tensorflow import DType, IndexedSlices, Operation, Tensor, TensorCompatible
-from tensorflow._aliases import AnyArray, FloatArray, FloatDataSequence, ShapeLike
+from tensorflow import Tensor
+from tensorflow._aliases import AnyArray, FloatArray
 from tensorflow.debugging import experimental as experimental
+from tensorflow.python.eager.context import (
+    get_log_device_placement as get_log_device_placement,
+    set_log_device_placement as set_log_device_placement,
+)
+from tensorflow.python.ops.check_ops import (
+    assert_equal_v2 as assert_equal,
+    assert_greater_equal_v2 as assert_greater_equal,
+    assert_greater_v2 as assert_greater,
+    assert_integer_v2 as assert_integer,
+    assert_less_equal_v2 as assert_less_equal,
+    assert_less_v2 as assert_less,
+    assert_near_v2 as assert_near,
+    assert_negative_v2 as assert_negative,
+    assert_non_negative_v2 as assert_non_negative,
+    assert_non_positive_v2 as assert_non_positive,
+    assert_none_equal_v2 as assert_non_equal,
+    assert_positive_v2 as assert_positive,
+    assert_proper_iterable as assert_proper_iterable,
+    assert_rank_at_least_v2 as assert_rank_at_least,
+    assert_rank_in_v2 as assert_rank_in,
+    assert_rank_v2 as assert_rank,
+    assert_same_float_dtype as assert_same_float_dtype,
+    assert_scalar_v2 as assert_scalar,
+    assert_shapes_v2 as assert_shapes,
+    assert_type_v2 as assert_type,
+    is_numeric_tensor as is_numeric_tensor,
+)
+from tensorflow.python.ops.control_flow_assert import Assert as Assert
+from tensorflow.python.ops.gen_array_ops import check_numerics as check_numerics
+from tensorflow.python.ops.numerics import verify_tensor_all_finite_v2 as assert_all_finite
+from tensorflow.python.util.traceback_utils import (
+    disable_traceback_filtering as disable_traceback_filtering,
+    enable_traceback_filtering as enable_traceback_filtering,
+    is_traceback_filtering_enabled as is_traceback_filtering_enabled,
+)
 
-# str is not a valid input type.
-_AssertInput: TypeAlias = AnyArray | Tensor | float | int | Sequence[str] | Sequence[_AssertInput]
-_AssertInputT = TypeVar("_AssertInputT", AnyArray, Tensor, float, int, Sequence[str], Sequence[_AssertInput])
-_AssertInputFloat: TypeAlias = FloatArray | Tensor | float | complex | Sequence[_AssertInputFloat]
-_AssertInputFloatT = TypeVar("_AssertInputFloatT", FloatArray, Tensor, float, complex, Sequence[_AssertInputFloat])
-
-class Assert:
-    def __init__(
-        self, condition: TensorCompatible, data: Tensor, summarize: int | None = None, name: str | None = None
-    ) -> None: ...
-
-def assert_all_finite(
-    x: Tensor | FloatArray | FloatDataSequence | IndexedSlices, message: str, name: str | None = None
-) -> Tensor: ...
-def assert_equal(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_greater(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_greater_equal(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_integer(x: object, message: str | None = None, name: str | None = None) -> Operation | None: ...
-def assert_less(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_less_equal(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_near(
-    x: _AssertInputFloatT,
-    y: _AssertInputFloatT,
-    rtol: _AssertInputFloatT | None = None,
-    atol: _AssertInputFloatT | None = None,
-    message: str | None = None,
-    summarize: int | None = None,
-    name: str | None = None,
-) -> Operation | None: ...
-def assert_negative(
-    x: _AssertInput, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_non_negative(
-    x: _AssertInput, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_non_positive(
-    x: _AssertInput, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_none_equal(
-    x: _AssertInputT, y: _AssertInputT, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_positive(
-    x: _AssertInput, message: str | None = None, summarize: int | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_proper_iterable(values: Iterable[Any]) -> Operation | None: ...
-def assert_rank(
-    x: TensorCompatible, rank: int | Tensor | npt.NDArray[np.int32], message: str | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_rank_at_least(
-    x: TensorCompatible, rank: int | Tensor | npt.NDArray[np.int32], message: str | None = None, name: str | None = None
-) -> Operation | None: ...
-def assert_rank_in(
-    x: TensorCompatible,
-    rank: Iterable[int | Tensor | npt.NDArray[np.int32]] | Tensor | npt.NDArray[np.int32],
-    message: str | None = None,
-    name: str | None = None,
-) -> Operation | None: ...
-def assert_same_float_dtype(tensors: Iterable[Tensor] | None = None, dtype: DType | None = None) -> Operation | None: ...
-def assert_scalar(tensor: str | bytes | complex | Tensor | AnyArray, dtype: DType | None = None) -> Operation | None: ...
-
-# TODO: not sure about the types for the one bellow.
-def assert_shapes(
-    shapes: dict[Tensor, ShapeLike] | list[tuple[Tensor, ShapeLike]],
-    data: Iterable[Tensor] | None = None,
-    message: str | None = None,
-    summarize: int | None = None,
-    name: str | None = None,
-) -> Operation | None: ...
-def assert_type(tensor: object, tf_type: DType, message: str | None = None, name: str | None = None) -> Operation | None: ...
-def check_numerics(tensor: _AssertInputFloat, message: str, name: str | None = None) -> Operation | None: ...
+# module 'tensorflow.python.debug' has no attribute 'lib'
 def disable_check_numerics() -> None: ...
-def disable_traceback_filtering() -> None: ...
+
+# module 'tensorflow.python.debug' has no attribute 'lib'
 def enable_check_numerics(stack_height_limit: int = 30, path_length_limit: int = 50) -> None: ...
-def enable_traceback_filtering() -> None: ...
-def get_log_device_placement() -> bool: ...
-def is_numeric_tensor(tensor: object) -> bool: ...
-def is_traceback_filtering_enabled() -> bool: ...
-def set_log_device_placement(enabled: bool) -> None: ...
