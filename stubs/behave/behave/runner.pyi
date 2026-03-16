@@ -1,23 +1,24 @@
 from _typeshed import Incomplete
 from collections.abc import Callable
 from contextlib import AbstractContextManager
-from typing import ParamSpec
+from typing import ClassVar, ParamSpec
 
 _P = ParamSpec("_P")
 
 class Context:
-    LAYER_NAMES: list[str]
-    FAIL_ON_CLEANUP_ERRORS: bool
+    LAYER_NAMES: ClassVar[list[str]]
+    FAIL_ON_CLEANUP_ERRORS: ClassVar[bool]
 
-    feature: Incomplete
+    feature: Incomplete | None
     scenario: Incomplete
     tags: set[str]
     aborted: bool
     failed: bool
-    table: Incomplete
+    table: Incomplete | None
     text: str | None
     config: Incomplete
     active_outline: Incomplete
+    fail_on_cleanup_errors: bool
 
     def __init__(self, runner) -> None: ...
     def __getattr__(self, name: str) -> Incomplete: ...
@@ -33,3 +34,5 @@ class Context:
     @property
     def captured(self): ...
     def attach(self, mime_type: str, data: bytes) -> None: ...
+
+def __getattr__(name: str) -> Incomplete: ...
